@@ -7,7 +7,11 @@ import { Server } from 'socket.io';
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:5000'],
+  },
+});
 
 dotenv.config();
 
@@ -34,13 +38,22 @@ app.use((req, res, next) => {
   res.status(404).json('Not Found');
 });
 
+// app.listen(app.get('port'), () => {
+//   console.log(app.get('port'), '번 포트에서 대기 중');
+// });
+
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log('user connected');
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
+  socket.on('chat message', (msg) => {
+    io.emit('chat message', msg);
+    console.log('message: ' + msg);
+  });
 });
 
-app.listen(app.get('port'), () => {
-  console.log(app.get('port'), '번 포트에서 대기 중');
+// app.listen이 아닌 http.listen를 사용한다.
+server.listen(3001, () => {
+  console.log('started server');
 });

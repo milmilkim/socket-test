@@ -1,63 +1,83 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-const pages = ['index', 'subpage'];
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const myOption = require('./my.config');
+// const pages = ['index'];
 
 module.exports = {
   mode: 'development',
-  watch: true,
-  //엔트리
-  entry: pages.reduce((config, page) => {
-    config[page] = `./src/${page}.js`;
-    return config;
-  }, {}),
-  //ejs(템플릿)
-  plugins: [].concat(
-    pages.map(
-      (page) =>
-        new HtmlWebpackPlugin({
-          inject: true,
-          template: `./src/${page}.html`,
-          filename: `${page}.html`,
-          chunks: [page],
-        })
-    )
-  ),
-  //아웃풋 (자바스크립트를 하나로 말아줌)
+  // entry: pages.reduce((config, page) => {
+  //   config[page] = `./src/${page}.js`;
+  //   return config;
+  // }, {}),
+
+  entry: {
+    index: './src/index.js',
+  },
+
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist', 'images'),
   },
+
+  //ejs(템플릿)
+  // plugins: [].concat(
+  //   pages.map(
+  //     (page) =>
+  //       new HtmlWebpackPlugin({
+  //         inject: true,
+  //         template: `./src/${page}.ejs`,
+  //         filename: `${page}.html`,
+  //         chunks: [page],
+  //       })
+  //   )
+  // ),
+  plugins: [
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: `./src/index.ejs`,
+      filename: './index.html',
+      chunks: ['index'],
+      myOption,
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'style.css',
+      chunkFilename: '[name].css',
+    }),
+  ],
+
   optimization: {
     splitChunks: {
       chunks: 'all',
     },
   },
-  //모듈.. css, scss 같은 애들을 하나로 말아줌
+
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        test: /\.(css|sass|scss)$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        exclude: /node_modules/,
       },
-      {
-        test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      },
-      //바벨(트랜스파일러)
       {
         test: /\.js$/,
         exclude: /node_modules/,
         use: 'babel-loader',
       },
+      {
+        test: /\.ejs$/,
+        loader: 'ejs-webpack-loader',
+      },
     ],
   },
-  //개발용 서버
   devServer: {
     static: {
       directory: path.join(__dirname, 'dist'),
     },
+    watchFiles: ['*.html', '*.ejs'],
+    hot: true,
+
     compress: true,
-    port: 5000,
+    port: 3030,
   },
 };

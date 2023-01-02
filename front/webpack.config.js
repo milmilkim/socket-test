@@ -16,8 +16,8 @@ module.exports = {
   },
 
   output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'dist', 'images'),
+    filename: 'images/[name].js',
+    path: path.resolve(__dirname, 'dist'),
   },
 
   //ejs(템플릿)
@@ -38,7 +38,14 @@ module.exports = {
       template: `./src/index.ejs`,
       filename: './index.html',
       chunks: ['index'],
-      myOption,
+      title: 'hello',
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: `./src/header.ejs`,
+      filename: './header.html',
+      chunks: ['index'],
+      title: 'hello',
     }),
     new MiniCssExtractPlugin({
       filename: 'style.css',
@@ -64,17 +71,14 @@ module.exports = {
         exclude: /node_modules/,
         use: 'babel-loader',
       },
-      {
-        test: /\.ejs$/,
-        loader: 'ejs-webpack-loader',
-      },
     ],
   },
   devServer: {
     static: {
       directory: path.join(__dirname, 'dist'),
     },
-    watchFiles: ['*.html', '*.ejs'],
+
+    watchFiles: ['./src/*.ejs'],
     hot: true,
 
     compress: true,

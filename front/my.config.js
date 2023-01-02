@@ -1,3 +1,3 @@
 module.exports = {
-  title: '안녕하세요',
+  menu: ['잠자기', '집에가기'],
 };

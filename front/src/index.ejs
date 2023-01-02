@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title></title>
   </head>
   <body>
-    <%- include ./header.ejs %>
+    <%= htmlWebpackPlugin.options.title %> <%= require('html-loader!./header.ejs').default %>
   </body>
+  <script></script>
 </html>
